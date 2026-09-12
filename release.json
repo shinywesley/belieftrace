@@ -1,8 +1,14 @@
 {
   "stage": "in_preparation",
-  "weekly_price_usd": null,
-  "weekly_answers": null,
+  "weekly_price_usd": 4.99,
+  "weekly_answers": 25,
   "free_answers_total": 5,
-  "catalog": ["immanuel_kant", "john_locke", "karl_marx", "niccolo_machiavelli", "thomas_hobbes"],
+  "catalog": [
+    "immanuel_kant",
+    "john_locke",
+    "karl_marx",
+    "niccolo_machiavelli",
+    "thomas_hobbes"
+  ],
   "native_screenshots_verified": false
 }
