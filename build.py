@@ -4,6 +4,7 @@ from pathlib import Path
 from html import escape
 import json
 import shutil
+import hashlib
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "dist"
@@ -30,6 +31,28 @@ def contact():
     return f'<p>BeliefTrace is operated by <strong>Wesley Jaynes</strong>. For support, privacy, security, or rights questions, email <a href="mailto:{SUPPORT}">{SUPPORT}</a>.</p>'
 
 
+def native_proof(assets):
+    if not CONFIG.get('native_screenshots_verified'):
+        return ''
+    captures = CONFIG.get('native_screenshots', [])
+    assert captures, 'Verified imagery requires a reviewed capture manifest'
+    cards = []
+    for capture in captures:
+        source = ROOT / 'assets' / capture['file']
+        assert source.is_file()
+        assert hashlib.sha256(source.read_bytes()).hexdigest() == capture['sha256']
+        shutil.copyfile(source, assets / source.name)
+        variants = []
+        for variant in capture.get('variants', []):
+            image = ROOT / 'assets' / variant['file']
+            assert hashlib.sha256(image.read_bytes()).hexdigest() == variant['sha256']
+            shutil.copyfile(image, assets / image.name)
+            variants.append(f'{BASE}/assets/{escape(image.name, quote=True)} {variant["width"]}w')
+        responsive = f'<source type="image/webp" srcset="{", ".join(variants)}" sizes="(max-width: 640px) calc(100vw - 40px), 340px">' if variants else ''
+        cards.append(f'<figure><picture>{responsive}<img src="{BASE}/assets/{escape(source.name, quote=True)}" width="{capture["width"]}" height="{capture["height"]}" loading="lazy" decoding="async" alt="{escape(capture["alt"], quote=True)}"></picture><figcaption><h3>{escape(capture["title"])}</h3><p>{escape(capture["caption"])}</p></figcaption></figure>')
+    return '<section class="native-proof" aria-labelledby="native-proof-heading"><div class="section-heading"><p class="eyebrow">Inside the app</p><h2 id="native-proof-heading">A closer look<br> at curiosity.</h2></div><div class="native-captures">'+''.join(cards)+'</div><p class="capture-note">Captured from the running iPhone app during release testing.</p></section>'
+
+
 def page(path, title, description, body):
     canonical = f"{ORIGIN}{BASE}{path}"
     nav = ''.join(link(p, label, 'aria-current="page"' if path == p else '') for p, label in [('/#explore','Explore'),('/support/','Support')])
@@ -54,6 +77,7 @@ def build():
 <section class="principle"><p class="eyebrow">Intellectual curiosity, with care</p><h2>An interpretation.<br> <em>An invitation to think.</em></h2><p>BeliefTrace does not reproduce a historical person. Generated prose is not an authentic quotation. Sources help you inspect an answer; they do not make AI infallible.</p>{link('/safety/','Read about accuracy and safety <span aria-hidden="true">↗</span>','class="text-link"')}</section>
 <section class="access"><div><p class="eyebrow">Room to explore</p><h2>Five answers<br> to begin.</h2></div><div><p class="large-copy">The next release includes five successful free answers in total, across thinkers and conversations.</p><p>Reading old conversations, exploring maps, and opening sources does not use an answer. A service error without a usable answer does not spend your allowance.</p><p>{paid}</p>{link('/terms/','Read the subscription terms <span aria-hidden="true">↗</span>','class="text-link"')}</div></section>
 <section class="faq"><p class="eyebrow">A few useful answers</p><h2>Before you begin.</h2><details><summary>Is this a conversation with the real person?</summary><p>No. BeliefTrace presents AI interpretations of documented ideas. Historical people and their estates do not endorse the app. Always distinguish generated interpretation from an explicitly sourced quotation.</p></details><details><summary>Where do my conversations live?</summary><p>Conversations are stored on your iPhone. The mobile app has no BeliefTrace account or cloud chat synchronization. A question and limited recent context are sent to the service and OpenAI only after AI-processing consent.</p>{link('/privacy/','Read the privacy policy')}</details><details><summary>Does exploring a map use an answer?</summary><p>No. The allowance applies to completed answers to questions and follow-ups. Browsing maps, sources, and existing conversations is free.</p></details><details><summary>Can I use it offline?</summary><p>Saved conversations and previously cached material can be read offline. New answers and uncached source or graph content need an internet connection.</p></details><details><summary>How can I get help?</summary><p>Email <a href="mailto:{SUPPORT}">{SUPPORT}</a>. Include your app version and public error code. Please leave private conversations and credentials out of ordinary support emails.</p></details></section>'''
+    home = home.replace('<section class="thinkers">', native_proof(assets) + '<section class="thinkers">', 1)
     privacy = section('At a glance','<p>This policy covers the BeliefTrace iPhone app and this information website. The next iPhone release is still in preparation. The mobile app uses a pseudonymous installation identity and local conversation storage. It does not offer a BeliefTrace login or silently synchronize existing chats.</p>')
     privacy += section('Your questions and AI processing','<p>Before the first AI request, the app asks for consent to send your question and a limited portion of recent conversation context to the BeliefTrace service and OpenAI. Relevant source passages may also be sent to help produce an answer. These requests are processed for generation, evidence checks, and necessary reliability steps.</p><p>Do not include information you would not want these services to process. Withdrawing consent stops new AI requests; it does not retract information already processed.</p><p>OpenAI’s default API policy does not use API data to train models unless the customer opts in. Default abuse-monitoring logs may include prompts and responses and be retained for up to 30 days, or longer when legally required. This is not a promise of zero retention or confirmation of special account-level controls. See <a href="https://platform.openai.com/docs/guides/your-data">OpenAI’s data controls</a>.</p>')
     privacy += section('Local records and short-term recovery','<p>Conversations, drafts, saved preferences, and cached graphs remain on your iPhone. Deleting or losing this local data can permanently remove it; restoring a purchase does not restore chats.</p><p>The next release temporarily retains completed answer responses on the server for up to 48 hours so a disrupted delivery can be recovered without generating or charging twice. This recovery copy is encrypted at rest and can be erased from Settings without a subscription. Content expires after 48 hours and is physically purged during scheduled cleanup; protected backups may retain it under the backup retention policy. It is separate from your local conversation history and is not a cloud-sync service. It contains answer and evidence content; it is not routine analytics.</p>')

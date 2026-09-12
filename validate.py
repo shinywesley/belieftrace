@@ -21,6 +21,8 @@ class Inspect(HTMLParser):
         if tag in ['a','link','img']:
             ref=attrs.get('href') or attrs.get('src')
             if ref:self.refs.append(ref)
+        if tag=='source' and attrs.get('srcset'):
+            self.refs.extend(candidate.strip().split()[0] for candidate in attrs['srcset'].split(','))
         if tag=='h1':self.h1+=1
         if tag=='main':self.main+=1
         if tag=='img':self.images.append(attrs)
@@ -55,7 +57,7 @@ def main():
             checked+=1
     for file in ROOT.rglob('*'):
         if not file.is_file():continue
-        assert file.suffix in {'.html','.png','.css','.xml','.txt',''}
+        assert file.suffix in {'.html','.png','.webp','.css','.xml','.txt',''}
         assert not re.search(rb'-----BEGIN (?:RSA |EC )?PRIVATE KEY-----|\bsk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{35,}|\bghp_[A-Za-z0-9_]{35,}',file.read_bytes())
     ET.parse(ROOT/'sitemap.xml')
     assert (ROOT/'404.html').is_file() and (ROOT/'robots.txt').is_file()

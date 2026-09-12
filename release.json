@@ -10,6 +10,56 @@
     "niccolo_machiavelli",
     "thomas_hobbes"
   ],
-  "native_screenshots_verified": false,
-  "initial_storefront": "USA"
+  "native_screenshots_verified": true,
+  "initial_storefront": "USA",
+  "native_screenshots": [
+    {
+      "file": "final-discover.png",
+      "source_capture": "docs/belief-trace/release-2026-09-12/evidence/native/final-discover.png",
+      "sha256": "03efdae9d3a42cb5c54d24436f2c6a799a97628ecac78f49eaa3fd3409e16a2b",
+      "width": 1320,
+      "height": 2868,
+      "title": "Find a perspective",
+      "caption": "Browse thinkers and interests, or return to an existing conversation.",
+      "alt": "BeliefTrace Discover screen with interests, John Locke and Immanuel Kant.",
+      "variants": [
+        {
+          "file": "final-discover-660.webp",
+          "width": 660,
+          "sha256": "ab343f9fdda12fdc67e633a6e3f81efdcdfc7c2eb7f84cd93a74e932df2eac4a",
+          "bytes": 103866
+        },
+        {
+          "file": "final-discover-1320.webp",
+          "width": 1320,
+          "sha256": "dcd8bd7351d88ee37e49a5b17a8fb9c1ec3bff0d86c9a7971f79f8ea18ea391e",
+          "bytes": 257922
+        }
+      ]
+    },
+    {
+      "file": "final-source.png",
+      "source_capture": "docs/belief-trace/release-2026-09-12/evidence/native/final-source.png",
+      "sha256": "add5ca08519b6b15679798d67e320c0eee96fc32703526c3ddb7a92f7f8de7e1",
+      "width": 1320,
+      "height": 2868,
+      "title": "Inspect the source",
+      "caption": "Open the cited passage and its original work. Source confidence describes editorial support, not philosophical truth.",
+      "alt": "BeliefTrace evidence screen showing Kant\u2019s good-will idea with an attributed source passage.",
+      "variants": [
+        {
+          "file": "final-source-660.webp",
+          "width": 660,
+          "sha256": "2cc07a98270a124c94b90d5792e1235c89de250db9e979736be72fba385fbbdc",
+          "bytes": 86470
+        },
+        {
+          "file": "final-source-1320.webp",
+          "width": 1320,
+          "sha256": "a199280c002b0a6244617777368f1cfcb34391c40a553e0ae448ef61fc456ea1",
+          "bytes": 177040
+        }
+      ]
+    }
+  ]
 }
